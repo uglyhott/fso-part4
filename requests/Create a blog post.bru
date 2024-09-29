@@ -1,0 +1,20 @@
+meta {
+  name: Create a blog post
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:3003/api/blogs
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "Hello, world!",
+    "author": "Meriadoc",
+    "url": "medium.com",
+    "likes": 1
+  }
+}
