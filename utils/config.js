@@ -1,5 +1,3 @@
-const { model } = require('mongoose')
-
 require('dotenv').config()
 
 const PORT = process.env.PORT
