@@ -30,9 +30,29 @@ const mostBlogs = (blogs) => {
   return authors.reduce((a, b) => a.count < b.count ? b : a)
 }
 
+const mostLikes = (blogs) => {
+  if (blogs.length === 0) return null
+
+  const authors = []
+
+  for (blog of blogs) {
+    let in_Author = false
+    for (author of authors) {
+      if (blog.author === author.author) {
+        in_Author = true
+        author.likes += blog.likes
+        break
+      }
+    }
+    if (!in_Author) authors.push({ author: blog.author, likes: blog.likes })
+  }
+  return authors.reduce((a, b) => a.likes < b.likes ? b : a)
+}
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 }
