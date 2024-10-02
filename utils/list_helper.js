@@ -7,12 +7,32 @@ const totalLikes = (blogs) => {
 }
 
 const favoriteBlog = (blogs) => {
-  if (blogs.length === 0) return null;
+  if (blogs.length === 0) return null
   return blogs.reduce((a, b) => a.likes < b.likes ? b : a, blogs[0])
+}
+
+const mostBlogs = (blogs) => {
+  if (blogs.length === 0) return null
+
+  const authors = []
+
+  for (blog of blogs) {
+    let in_Author = false
+    for (author of authors) {
+      if (blog.author === author.author) {
+        in_Author = true
+        author.count += 1
+        break
+      }
+    }
+    if (!in_Author) authors.push({ author: blog.author, count: 1 })
+  }
+  return authors.reduce((a, b) => a.count < b.count ? b : a)
 }
 
 module.exports = {
   dummy,
   totalLikes,
-  favoriteBlog
+  favoriteBlog,
+  mostBlogs
 }

@@ -89,7 +89,7 @@ describe('total likes', () => {
 })
 
 describe('favorite blog', () => {
-  it('of empty list is zero', () => {
+  it('of empty list is null', () => {
     const result = listHelper.favoriteBlog([])
     assert.strictEqual(result, null)
   })
@@ -103,5 +103,22 @@ describe('favorite blog', () => {
   it('of a long list is that with highest likes', () => {
     const result = listHelper.favoriteBlog(listWithMultipleBlogs)
     assert.deepStrictEqual(result, listWithMultipleBlogs[2])
+  })
+})
+
+describe('most blogs', () => {
+  it('of empty list is null', () => {
+    const result = listHelper.mostBlogs([])
+    assert.strictEqual(result, null)
+  })
+
+  it('of single blog in list is that author', () => {
+    const result = listHelper.mostBlogs(listWithOneBlog)
+    assert.deepStrictEqual(result, { author: 'Edsger W. Dijkstra', count: 1 })
+  })
+
+  it('of a long list is correct author and count', () => {
+    const result = listHelper.mostBlogs(listWithMultipleBlogs)
+    assert.deepStrictEqual(result, { author: 'Robert C. Martin', count: 3 })
   })
 })
