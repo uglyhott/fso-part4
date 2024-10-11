@@ -1,9 +1,11 @@
+const { NODE_ENV } = require('./config');
+
 const info = (...args) => {
-  console.log(...args);
+  if (NODE_ENV !== 'test') console.log(...args);
 };
 
 const error = (...args) => {
-  console.error(...args);
+  if (NODE_ENV !== 'test') console.error(...args);
 };
 
 module.exports = {
