@@ -68,6 +68,30 @@ describe.only('with initial Blogs already saved', () => {
         res.body.likes = 0;
       });
   });
+
+  it.only('responds correctly when title is missing', async () => {
+    const blogMissingTitle = {
+      author: 'Gandalf',
+      url: 'greywizard.net',
+    };
+
+    await api
+      .post('/api/blogs/')
+      .send(blogMissingTitle)
+      .expect(400);
+  });
+
+  it.only('responds correctly when url is missing', async () => {
+    const blogMissingUrl = {
+      title: 'url is missing',
+      author: 'Gandalf',
+    };
+
+    await api
+      .post('/api/blogs/')
+      .send(blogMissingUrl)
+      .expect(400);
+  });
 });
 
 after(async () => {
