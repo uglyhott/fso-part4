@@ -34,7 +34,7 @@ describe.only('with initial Blogs already saved', () => {
     assert.strictEqual(checkUnderscoreId, false, '_id key found');
   });
 
-  it.only('saves another blog', async () => {
+  it('saves another blog', async () => {
     const blog = {
       title: 'test async blog POST',
       author: 'Bilbo',
@@ -51,6 +51,22 @@ describe.only('with initial Blogs already saved', () => {
 
     assert.strictEqual(blogsInDb.length, helper.initialBlogs.length + 1);
     assert(blogTitles.includes('test async blog POST'));
+  });
+
+  it.only('likes property defaults to 0 if missing', async () => {
+    const blog = {
+      title: 'likes default to 0',
+      author: 'Pippin',
+      url: 'lotr.world',
+    };
+
+    await api
+      .post('/api/blogs/')
+      .send(blog)
+      .expect(201)
+      .expect((res) => {
+        res.body.likes = 0;
+      });
   });
 });
 
