@@ -26,12 +26,31 @@ describe.only('with initial Blogs already saved', () => {
     assert.strictEqual(response.body.length, helper.initialBlogs.length);
   });
 
-  it.only('blog object uses id and not _id', async () => {
+  it('blog object uses id and not _id', async () => {
     const blogs = await helper.blogsInDb();
     const checkId = Object.keys(blogs[0]).includes('id');
     const checkUnderscoreId = Object.keys(blogs[0]).includes('_id');
     assert.strictEqual(checkId, true, 'id key not found');
     assert.strictEqual(checkUnderscoreId, false, '_id key found');
+  });
+
+  it.only('saves another blog', async () => {
+    const blog = {
+      title: 'test async blog POST',
+      author: 'Bilbo',
+      url: 'bilbobaggins.com',
+    };
+
+    await api
+      .post('/api/blogs/')
+      .send(blog)
+      .expect(201);
+
+    const blogsInDb = await helper.blogsInDb();
+    const blogTitles = blogsInDb.map((blogs) => blogs.title.toString());
+
+    assert.strictEqual(blogsInDb.length, helper.initialBlogs.length + 1);
+    assert(blogTitles.includes('test async blog POST'));
   });
 });
 
