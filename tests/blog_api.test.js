@@ -13,7 +13,7 @@ const helper = require('./test_helper');
 
 const api = supertest(app);
 
-describe.only('with initial Blogs already saved', () => {
+describe('with initial Blogs already saved', () => {
   beforeEach(async () => {
     await Blog.deleteMany({});
     const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
@@ -33,8 +33,17 @@ describe.only('with initial Blogs already saved', () => {
     assert.strictEqual(checkId, true, 'id key not found');
     assert.strictEqual(checkUnderscoreId, false, '_id key found');
   });
+});
 
-  it('saves another blog', async () => {
+describe('POST /api/blogs/', () => {
+  beforeEach(async () => {
+    await Blog.deleteMany({});
+    const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
+    const promiseArray = blogObjects.map((blog) => blog.save());
+    await Promise.all(promiseArray);
+  });
+
+  it('saves a new blog', async () => {
     const blog = {
       title: 'test async blog POST',
       author: 'Bilbo',
@@ -53,7 +62,7 @@ describe.only('with initial Blogs already saved', () => {
     assert(blogTitles.includes('test async blog POST'));
   });
 
-  it.only('likes property defaults to 0 if missing', async () => {
+  it('likes property defaults to 0 if missing', async () => {
     const blog = {
       title: 'likes default to 0',
       author: 'Pippin',
@@ -69,7 +78,7 @@ describe.only('with initial Blogs already saved', () => {
       });
   });
 
-  it.only('responds correctly when title is missing', async () => {
+  it('responds correctly when title is missing', async () => {
     const blogMissingTitle = {
       author: 'Gandalf',
       url: 'greywizard.net',
@@ -81,7 +90,7 @@ describe.only('with initial Blogs already saved', () => {
       .expect(400);
   });
 
-  it.only('responds correctly when url is missing', async () => {
+  it('responds correctly when url is missing', async () => {
     const blogMissingUrl = {
       title: 'url is missing',
       author: 'Gandalf',
