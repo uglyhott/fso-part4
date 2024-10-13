@@ -103,6 +103,23 @@ describe('POST /api/blogs/', () => {
   });
 });
 
+describe.only('DELETE /api/blogs/', () => {
+  beforeEach(async () => {
+    await Blog.deleteMany({});
+    const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
+    const promiseArray = blogObjects.map((blog) => blog.save());
+    await Promise.all(promiseArray);
+  });
+
+  it.only('deletes a single blog post', async () => {
+    const blogsInDb = await helper.blogsInDb();
+
+    await api
+      .delete(`/api/blogs/${blogsInDb[0].id}`)
+      .expect(204);
+  });
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
