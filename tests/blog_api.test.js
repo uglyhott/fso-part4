@@ -36,13 +36,6 @@ describe('with initial Blogs already saved', () => {
 });
 
 describe('POST /api/blogs/', () => {
-  beforeEach(async () => {
-    await Blog.deleteMany({});
-    const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
-    const promiseArray = blogObjects.map((blog) => blog.save());
-    await Promise.all(promiseArray);
-  });
-
   it('saves a new blog', async () => {
     const blog = {
       title: 'test async blog POST',
@@ -103,7 +96,7 @@ describe('POST /api/blogs/', () => {
   });
 });
 
-describe.only('DELETE /api/blogs/', () => {
+describe('DELETE /api/blogs/', () => {
   beforeEach(async () => {
     await Blog.deleteMany({});
     const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
@@ -111,12 +104,46 @@ describe.only('DELETE /api/blogs/', () => {
     await Promise.all(promiseArray);
   });
 
-  it.only('deletes a single blog post', async () => {
+  it('deletes a single blog post', async () => {
     const blogsInDb = await helper.blogsInDb();
 
     await api
       .delete(`/api/blogs/${blogsInDb[0].id}`)
       .expect(204);
+  });
+});
+
+describe('PUT /api/blogs/', () => {
+  beforeEach(async () => {
+    await Blog.deleteMany({});
+    const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
+    const promiseArray = blogObjects.map((blog) => blog.save());
+    await Promise.all(promiseArray);
+  });
+
+  it('updates a blog\'s likes', async () => {
+    const blogs = await helper.blogsInDb();
+    const {
+      author,
+      title,
+      url,
+      likes,
+      id,
+    } = blogs[0];
+
+    const changedBlog = {
+      id,
+      author,
+      title,
+      url,
+      likes: likes + 1,
+    };
+
+    const updatedBlog = await api
+      .put(`/api/blogs/${id}`)
+      .send(changedBlog);
+
+    assert.deepStrictEqual(updatedBlog.body, changedBlog);
   });
 });
 

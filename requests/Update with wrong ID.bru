@@ -1,0 +1,17 @@
+meta {
+  name: Update with wrong ID
+  type: http
+  seq: 5
+}
+
+put {
+  url: http://localhost:3003/api/blogs/150
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "likes": 100
+  }
+}

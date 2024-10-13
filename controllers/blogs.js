@@ -24,4 +24,19 @@ blogRouter.delete('/:id', async (request, response) => {
   response.status(204).end();
 });
 
+blogRouter.put('/:id', async (request, response) => {
+  const { author, url, likes } = request.body;
+  try {
+
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      request.params.id,
+      { author, url, likes, },
+      { new: true, context: 'query' },
+    );
+    response.json(updatedBlog);
+  } catch {
+    response.status(400).json({ error: 'malformatted id' });
+  }
+});
+
 module.exports = blogRouter;
