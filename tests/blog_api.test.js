@@ -145,6 +145,31 @@ describe('PUT /api/blogs/', () => {
 
     assert.deepStrictEqual(updatedBlog.body, changedBlog);
   });
+
+  it('errors on wrong id', async () => {
+    const blogs = await helper.blogsInDb();
+    const {
+      author,
+      title,
+      url,
+      likes,
+      id,
+    } = blogs[0];
+
+    const changedBlog = {
+      id,
+      author,
+      title,
+      url,
+      likes: likes + 1,
+    };
+
+    const updatedBlog = await api
+      .put(`/api/blogs/${Math.random()}`)
+      .send(changedBlog);
+    assert(updatedBlog.body.error.includes('malformatted id'));
+    assert.notDeepStrictEqual(updatedBlog.body, changedBlog);
+  });
 });
 
 after(async () => {

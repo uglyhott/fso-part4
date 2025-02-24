@@ -1,0 +1,19 @@
+meta {
+  name: Username Too Short
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:3003/api/users
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "lb",
+    "name": "Liam",
+    "password": "fullstacked"
+  }
+}
