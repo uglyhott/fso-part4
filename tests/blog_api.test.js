@@ -9,15 +9,19 @@ const assert = require('node:assert');
 const supertest = require('supertest');
 const app = require('../app');
 const Blog = require('../models/blog');
+const User = require('../models/user');
 const helper = require('./test_helper');
 
 const api = supertest(app);
 
 describe('with initial Blogs already saved', () => {
   beforeEach(async () => {
+    await User.deleteMany({});
+    const firstUser = new User(helper.initialUser);
     await Blog.deleteMany({});
     const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
     const promiseArray = blogObjects.map((blog) => blog.save());
+    promiseArray.unshift(firstUser.save());
     await Promise.all(promiseArray);
   });
 
@@ -98,9 +102,12 @@ describe('POST /api/blogs/', () => {
 
 describe('DELETE /api/blogs/', () => {
   beforeEach(async () => {
+    await User.deleteMany({});
+    const firstUser = new User(helper.initialUser);
     await Blog.deleteMany({});
     const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
     const promiseArray = blogObjects.map((blog) => blog.save());
+    promiseArray.unshift(firstUser.save());
     await Promise.all(promiseArray);
   });
 
