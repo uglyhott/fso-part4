@@ -1,0 +1,20 @@
+meta {
+  name: Create a blog post without auth
+  type: http
+  seq: 8
+}
+
+post {
+  url: http://localhost:3003/api/blogs
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "Token Tester",
+    "author": "Token Tolkien",
+    "url": "jrrtoken.com",
+    "likes": 10
+  }
+}
