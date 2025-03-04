@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const { NODE_ENV } = require('./config');
 
 const info = (...args) => {
