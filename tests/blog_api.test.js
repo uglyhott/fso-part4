@@ -4,24 +4,41 @@ const {
   it,
   beforeEach,
   after,
+  before,
 } = require('node:test');
 const assert = require('node:assert');
 const supertest = require('supertest');
+const jwt = require('jsonwebtoken');
 const app = require('../app');
 const Blog = require('../models/blog');
 const User = require('../models/user');
 const helper = require('./test_helper');
 
 const api = supertest(app);
+let TOKEN = '';
+
+before(async () => {
+  await User.deleteMany({});
+  const { username, name, password } = helper.initialUser;
+  const initialUser = {
+    username,
+    name,
+    password,
+  };
+  const firstUser = new User(initialUser);
+  const savedUser = await firstUser.save();
+  const userForToken = {
+    username: savedUser.username,
+    id: savedUser._id,
+  };
+  TOKEN = jwt.sign(userForToken, process.env.SECRET);
+});
 
 describe('with initial Blogs already saved', () => {
   beforeEach(async () => {
-    await User.deleteMany({});
-    const firstUser = new User(helper.initialUser);
     await Blog.deleteMany({});
     const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
     const promiseArray = blogObjects.map((blog) => blog.save());
-    promiseArray.unshift(firstUser.save());
     await Promise.all(promiseArray);
   });
 
@@ -49,6 +66,7 @@ describe('POST /api/blogs/', () => {
 
     await api
       .post('/api/blogs/')
+      .set('authorization', `Bearer ${TOKEN}`)
       .send(blog)
       .expect(201);
 
@@ -68,6 +86,7 @@ describe('POST /api/blogs/', () => {
 
     await api
       .post('/api/blogs/')
+      .set('authorization', `Bearer ${TOKEN}`)
       .send(blog)
       .expect(201)
       .expect((res) => {
@@ -83,6 +102,7 @@ describe('POST /api/blogs/', () => {
 
     await api
       .post('/api/blogs/')
+      .set('authorization', `Bearer ${TOKEN}`)
       .send(blogMissingTitle)
       .expect(400);
   });
@@ -95,6 +115,7 @@ describe('POST /api/blogs/', () => {
 
     await api
       .post('/api/blogs/')
+      .set('authorization', `Bearer ${TOKEN}`)
       .send(blogMissingUrl)
       .expect(400);
   });
@@ -102,13 +123,13 @@ describe('POST /api/blogs/', () => {
 
 describe('DELETE /api/blogs/', () => {
   beforeEach(async () => {
-    await User.deleteMany({});
-    const firstUser = new User(helper.initialUser);
     await Blog.deleteMany({});
+    const user = await User.findOne({ username: helper.initialUser.username });
     const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
     const promiseArray = blogObjects.map((blog) => blog.save());
-    promiseArray.unshift(firstUser.save());
-    await Promise.all(promiseArray);
+    const savedBlogs = await Promise.all(promiseArray);
+    const updateUserArray = savedBlogs.map((blog) => Blog.findByIdAndUpdate(blog.id, { user }));
+    await Promise.all(updateUserArray);
   });
 
   it('deletes a single blog post', async () => {
@@ -116,7 +137,16 @@ describe('DELETE /api/blogs/', () => {
 
     await api
       .delete(`/api/blogs/${blogsInDb[0].id}`)
+      .set('authorization', `Bearer ${TOKEN}`)
       .expect(204);
+  });
+
+  it('throws an error on misisng token', async () => {
+    const blogsInDb = await helper.blogsInDb();
+
+    await api
+      .delete(`/api/blogs/${blogsInDb[0].id}`)
+      .expect(401);
   });
 });
 
